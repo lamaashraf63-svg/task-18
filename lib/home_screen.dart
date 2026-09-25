@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'add_task_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -13,7 +14,6 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 1. Header (Profile, Greeting, Notification)
               Row(
                 children: [
                   CircleAvatar(
@@ -50,8 +50,6 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 24),
-
-              // 2. Task Statistics Cards (Blue Container matching Figma)
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -70,8 +68,6 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-
-              // 3. Today's Tasks Title
               const Text(
                 "Today's Tasks",
                 style: TextStyle(
@@ -81,8 +77,6 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-
-              // 4. Tasks List
               Expanded(
                 child: ListView(
                   children: const [
@@ -121,9 +115,15 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
-      // Floating Action Button matching Figma (+ Task)
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddTaskScreen(),
+            ),
+          );
+        },
         backgroundColor: Colors.grey[200],
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -142,7 +142,6 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-// Helper Widget for Statistics Items
 class _StatItem extends StatelessWidget {
   final String count;
   final String label;
@@ -174,7 +173,6 @@ class _StatItem extends StatelessWidget {
   }
 }
 
-// Helper Widget for Vertical Line Divider
 class _VerticalDivider extends StatelessWidget {
   const _VerticalDivider();
 
@@ -188,7 +186,6 @@ class _VerticalDivider extends StatelessWidget {
   }
 }
 
-// Reusable Task Card Widget
 class TaskCard extends StatelessWidget {
   final String title;
   final String subtitle;
