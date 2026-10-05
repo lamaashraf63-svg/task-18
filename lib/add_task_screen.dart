@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'task_model.dart';
 
 class AddTaskScreen extends StatefulWidget {
   const AddTaskScreen({super.key});
@@ -8,17 +9,51 @@ class AddTaskScreen extends StatefulWidget {
 }
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
-  String selectedStatus = 'Pending';
-  Color selectedColor = Colors.blue;
+  late final TextEditingController _titleController;
+  late final TextEditingController _descriptionController;
 
-  final List<Color> taskColors = [
-    Colors.blue,
-    Colors.green,
-    Colors.orange,
-    Colors.purple,
-    Colors.red,
-    TealColorCustom.teal,
+  String selectedStatus = 'Pending';
+  Color selectedColor = const Color(0xFF4C6FFF);
+
+  final List<Color> taskColors = const [
+    Color(0xFF4C6FFF),
+    Color(0xFF2DDA93),
+    Color(0xFFFF9F43),
+    Color(0xFFFF5252),
+    Color(0xFF8C52FF),
+    Color(0xFF008080),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController = TextEditingController();
+    _descriptionController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  void _saveTask() {
+    final title = _titleController.text.trim();
+    final description = _descriptionController.text.trim();
+
+    if (title.isEmpty) return;
+
+    final newTask = TaskModel(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      title: title,
+      description: description.isEmpty ? 'No description' : description,
+      status: selectedStatus,
+      color: selectedColor,
+    );
+
+    Navigator.pop(context, newTask);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,25 +74,33 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             fontSize: 18,
           ),
         ),
+        centerTitle: false,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Task Title Label & Input
             const Text(
               'Task Title',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black54),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black54,
+              ),
             ),
             const SizedBox(height: 8),
             TextField(
+              controller: _titleController,
               decoration: InputDecoration(
                 hintText: 'Design Login Screen',
                 hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
                 filled: true,
-                fillColor: Colors.grey[100],
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                fillColor: const Color(0xFFF8F9FA),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
@@ -65,20 +108,23 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               ),
             ),
             const SizedBox(height: 20),
-
-            // Description Label & Input
             const Text(
               'Description',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black54),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black54,
+              ),
             ),
             const SizedBox(height: 8),
             TextField(
+              controller: _descriptionController,
               maxLines: 4,
               decoration: InputDecoration(
                 hintText: 'Task Description...',
                 hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
                 filled: true,
-                fillColor: Colors.grey[100],
+                fillColor: const Color(0xFFF8F9FA),
                 contentPadding: const EdgeInsets.all(16),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -87,43 +133,56 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               ),
             ),
             const SizedBox(height: 20),
-
-            // Status Label & Dropdown
             const Text(
               'Status',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black54),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black54,
+              ),
             ),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: Colors.grey[100],
+                color: const Color(0xFFF8F9FA),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
                   value: selectedStatus,
                   isExpanded: true,
+                  icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
                   items: ['Pending', 'In Progress', 'Done'].map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
-                      child: Text(value, style: const TextStyle(fontSize: 14)),
+                      child: Text(
+                        value,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black87,
+                        ),
+                      ),
                     );
                   }).toList(),
                   onChanged: (newValue) {
-                    setState(() {
-                      selectedStatus = newValue!;
-                    });
+                    if (newValue != null) {
+                      setState(() {
+                        selectedStatus = newValue;
+                      });
+                    }
                   },
                 ),
               ),
             ),
             const SizedBox(height: 20),
-
-            // Choose Color Label & Color Pickers
             const Text(
               'Choose Color',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black54),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black54,
+              ),
             ),
             const SizedBox(height: 12),
             Row(
@@ -137,35 +196,34 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     });
                   },
                   child: Container(
-                    width: 36,
-                    height: 36,
+                    width: 38,
+                    height: 38,
+                    padding: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
-                      color: color,
                       shape: BoxShape.circle,
                       border: isSelected
-                          ? Border.all(color: Colors.black, width: 2)
+                          ? Border.all(color: color, width: 2)
                           : null,
                     ),
-                    child: isSelected
-                        ? const Icon(Icons.check, color: Colors.white, size: 20)
-                        : null,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: color,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
                   ),
                 );
               }).toList(),
             ),
             const SizedBox(height: 40),
-
-            // Save Task Button
             SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: () {
-                
-                  Navigator.pop(context);
-                },
+                onPressed: _saveTask,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF3B4371),
+                  elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -185,8 +243,4 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       ),
     );
   }
-}
-
-class TealColorCustom {
-  static const Color teal = Color(0xFF008B8B);
 }
